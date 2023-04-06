@@ -1,0 +1,112 @@
+﻿@page "/random-recommendation"
+
+<PageTitle>츄니즘 랜덤 곡 추첨</PageTitle>
+
+<h1>츄니즘 랜덤 곡 추첨</h1>
+
+<div>
+<label for="min-difficulty">최소 레벨
+<select class="custom-select" @bind="indexOfSelectedMinDifficulty">
+    @foreach (string difficulty in difficulties)
+    {
+        <option value="@difficulties.IndexOf(difficulty)">@difficulty</option>
+    }
+</select>
+</label>
+&nbsp; &nbsp; &nbsp; &nbsp; 
+<label for="max-difficulty">최대 레벨
+<select class="custom-select" @bind="indexOfSelectedMaxDifficulty">
+    @foreach (string difficulty in difficulties)
+    {
+        <option value="@difficulties.IndexOf(difficulty)">@difficulty</option>
+    }
+</select>
+</label>
+</div>
+
+<br/>
+<div hidden="@hideDiv">
+<span style="font:x-large bold;color:red">@difficulty</span> 레벨의 <span style="font:x-large bold;color:red">@position</span>/@numberOfTracks 번째 곡
+<br />
+<span style="font:x-large bold;color:red">@approachPoint</span>에서 접근하면 빨리 찾을 수 있어요!
+</div>
+<p hidden="@hideMsg" style="font:bold;color:red">최소 레벨이 최대 레벨보다 높습니다.</p>
+<br />
+<button class="btn btn-primary" @onclick="getRandomNumber">추첨!</button>
+
+@code {
+    private int indexOfSelectedMinDifficulty = 0;
+    private int indexOfSelectedMaxDifficulty = 0;
+    private string status = string.Empty;
+    private string difficulty = string.Empty;
+    private string approachPoint = string.Empty;
+    private int position = 0;
+    private int numberOfTracks = 0;
+
+    private bool hideDiv { get; set; } = true;
+    private bool hideMsg { get; set; } = true;
+
+    Dictionary<string, int> trackinfo = new Dictionary<string, int>();
+    
+    List<string> difficulties = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        trackinfo.Add("1", 16);
+        trackinfo.Add("2", 184);
+        trackinfo.Add("3", 604);
+        trackinfo.Add("4", 233);
+        trackinfo.Add("5", 342);
+        trackinfo.Add("6", 379);
+        trackinfo.Add("7", 139);
+        trackinfo.Add("7+", 51);
+        trackinfo.Add("8", 159);
+        trackinfo.Add("8+", 83);
+        trackinfo.Add("9", 173);
+        trackinfo.Add("9+", 248);
+        trackinfo.Add("10", 145);
+        trackinfo.Add("10+", 97);
+        trackinfo.Add("11", 96);
+        trackinfo.Add("11+", 137);
+        trackinfo.Add("12", 137);
+        trackinfo.Add("12+", 182);
+        trackinfo.Add("13", 164);
+        trackinfo.Add("13+", 216);
+        trackinfo.Add("14", 206);
+        trackinfo.Add("14+", 169);
+        trackinfo.Add("15", 31);
+
+        difficulties = trackinfo.Keys.ToList();
+    }
+
+
+    private void getRandomNumber()
+    {
+        if (indexOfSelectedMinDifficulty > indexOfSelectedMaxDifficulty)
+        {
+            hideDiv = true;
+            hideMsg = false;
+        }
+        else
+        {
+            hideDiv = false;
+            hideMsg = true;
+            Random random = new Random();
+
+            // Random.Next do not include maxValue
+            int indexOfselectedDifficulty = 
+                random.Next(indexOfSelectedMinDifficulty, indexOfSelectedMaxDifficulty + 1);
+            difficulty = trackinfo.ElementAt(indexOfselectedDifficulty).Key;
+            numberOfTracks = trackinfo[difficulty];
+            position = random.Next(1, numberOfTracks + 1);
+            if (numberOfTracks / 2 > position)
+            {
+                approachPoint = "왼쪽";
+            }
+            else
+            {
+                approachPoint = "오른쪽";
+            }
+        }
+    }
+}
