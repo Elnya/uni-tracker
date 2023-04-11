@@ -1,4 +1,5 @@
 ﻿@page "/random-recommendation"
+@using Microsoft.Fast.Components.FluentUI
 
 <PageTitle>츄니즘 랜덤 곡 추첨</PageTitle>
 
@@ -34,6 +35,35 @@
 </label>
 </div>
 
+
+<h4>슬라이더 테스트</h4>
+<FluentSlider Min="0" Max="220" Step="10" @bind-Value=test>
+    <FluentSliderLabel Position="0">1</FluentSliderLabel>
+    <FluentSliderLabel Position="10">2</FluentSliderLabel>
+    <FluentSliderLabel Position="20">3</FluentSliderLabel>
+    <FluentSliderLabel Position="30">4</FluentSliderLabel>
+    <FluentSliderLabel Position="40">5</FluentSliderLabel>
+    <FluentSliderLabel Position="50">6</FluentSliderLabel>
+    <FluentSliderLabel Position="60">7</FluentSliderLabel>
+    <FluentSliderLabel Position="70">7+</FluentSliderLabel>
+    <FluentSliderLabel Position="80">8</FluentSliderLabel>
+    <FluentSliderLabel Position="90">8+</FluentSliderLabel>
+    <FluentSliderLabel Position="100">9</FluentSliderLabel>
+    <FluentSliderLabel Position="110">9+</FluentSliderLabel>
+    <FluentSliderLabel Position="120">10</FluentSliderLabel>
+    <FluentSliderLabel Position="130">10+</FluentSliderLabel>
+    <FluentSliderLabel Position="140">11</FluentSliderLabel>
+    <FluentSliderLabel Position="150">11+</FluentSliderLabel>
+    <FluentSliderLabel Position="160">12</FluentSliderLabel>
+    <FluentSliderLabel Position="170">12+</FluentSliderLabel>
+    <FluentSliderLabel Position="180">13</FluentSliderLabel>
+    <FluentSliderLabel Position="190">13+</FluentSliderLabel>
+    <FluentSliderLabel Position="200">14</FluentSliderLabel>
+    <FluentSliderLabel Position="210">14+</FluentSliderLabel>
+    <FluentSliderLabel Position="220">15</FluentSliderLabel>
+<!--    <FluentIcon Name="@FluentIcons.Globe" Slot="thumb" Size="@IconSize.Size16" Color=Color.Neutral /> -->
+</FluentSlider>
+
 <br/>
 <div hidden="@hideDiv">
 <span style="font:x-large bold;color:red">@difficulty</span> 레벨의 <span style="font:x-large bold;color:red">@position</span>/@numberOfTracks 번째 곡
@@ -61,6 +91,7 @@
     private bool hideDiv { get; set; } = true;
     private bool hideErrorMsg { get; set; } = true;
 
+    private int test;
     Dictionary<string, int> internationalTrackinfo = new Dictionary<string, int>();
     Dictionary<string, int> japaneseTrackinfo = new Dictionary<string, int>();
     List<string> difficulties = new List<string>();
