@@ -6,36 +6,36 @@
 <h1>츄니즘 랜덤 곡 추첨</h1>
 
 <div>
-    <InputRadioGroup @bind-Value="versionFlag">
+    <fluent-radio-group @bind="versionFlag">
         구분 : 
         @foreach(var ver in Enum.GetValues(typeof(Version)))
         {
-            <InputRadio Value=@ver /><text>&nbsp;</text> @ver <text>&nbsp;</text> <text>&nbsp;</text>
+            <fluent-radio Value=@ver /><text>&nbsp;</text> @ver <text>&nbsp;</text> <text>&nbsp;</text>
         }
-    </InputRadioGroup>
+    </fluent-radio-group>
 </div>
 
 <div>
 <label for="min-difficulty">최소 레벨
-<select class="custom-select" @bind="indexOfSelectedMinDifficulty">
+<fluent-select class="custom-select" @bind="indexOfSelectedMinDifficulty">
     @foreach (string difficulty in difficulties)
     {
-        <option value="@difficulties.IndexOf(difficulty)">@difficulty</option>
+        <fluent-option value="@difficulties.IndexOf(difficulty)">@difficulty</fluent-option>
     }
-</select>
+</fluent-select>
 </label>
 &nbsp; &nbsp; &nbsp; &nbsp; 
 <label for="max-difficulty">최대 레벨
-<select class="custom-select" @bind="indexOfSelectedMaxDifficulty">
+<fluent-select class="custom-select" @bind="indexOfSelectedMaxDifficulty">
     @foreach (string difficulty in difficulties)
     {
-        <option value="@difficulties.IndexOf(difficulty)">@difficulty</option>
+        <fluent-option value="@difficulties.IndexOf(difficulty)">@difficulty</fluent-option>
     }
-</select>
+</fluent-select>
 </label>
 </div>
 
-
+<!--
 <h4>슬라이더 테스트</h4>
 <FluentSlider Min="0" Max="220" Step="10" @bind-Value=test>
     <FluentSliderLabel Position="0">1</FluentSliderLabel>
@@ -61,8 +61,9 @@
     <FluentSliderLabel Position="200">14</FluentSliderLabel>
     <FluentSliderLabel Position="210">14+</FluentSliderLabel>
     <FluentSliderLabel Position="220">15</FluentSliderLabel>
-<!--    <FluentIcon Name="@FluentIcons.Globe" Slot="thumb" Size="@IconSize.Size16" Color=Color.Neutral /> -->
+    <FluentIcon Name="@FluentIcons.Globe" Slot="thumb" Size="@IconSize.Size16" Color=Color.Neutral />
 </FluentSlider>
+-->
 
 <br/>
 <div hidden="@hideDiv">
