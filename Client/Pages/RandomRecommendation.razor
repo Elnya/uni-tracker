@@ -1,5 +1,4 @@
 ﻿@page "/random-recommendation"
-@using Microsoft.Fast.Components.FluentUI
 
 <PageTitle>츄니즘 랜덤 곡 추첨</PageTitle>
 
@@ -16,86 +15,78 @@
 </div>
 
 <div>
-<label for="min-difficulty">최소 레벨
-<fluent-select class="custom-select" @bind="indexOfSelectedMinDifficulty">
-    @foreach (string difficulty in difficulties)
+    <label for="min-level">최소 레벨</label>
+    <fluent-select class="custom-select" @bind="indexOfSelectedMinLevel">
+    @foreach (string level in levels)
     {
-        <fluent-option value="@difficulties.IndexOf(difficulty)">@difficulty</fluent-option>
+        <fluent-option value="@levels.IndexOf(level)">@level</fluent-option>
     }
-</fluent-select>
-</label>
-&nbsp; &nbsp; &nbsp; &nbsp; 
-<label for="max-difficulty">최대 레벨
-<fluent-select class="custom-select" @bind="indexOfSelectedMaxDifficulty">
-    @foreach (string difficulty in difficulties)
+    </fluent-select>
+    &nbsp; &nbsp; &nbsp; &nbsp; 
+    <label for="max-level">최대 레벨</label>
+    <fluent-select class="custom-select" @bind="indexOfSelectedMaxLevel">
+    @foreach (string level in levels)
     {
-        <fluent-option value="@difficulties.IndexOf(difficulty)">@difficulty</fluent-option>
+        <fluent-option value="@levels.IndexOf(level)">@level</fluent-option>
     }
-</fluent-select>
-</label>
+    </fluent-select>
 </div>
 
-<!--
-<h4>슬라이더 테스트</h4>
-<FluentSlider Min="0" Max="220" Step="10" @bind-Value=test>
-    <FluentSliderLabel Position="0">1</FluentSliderLabel>
-    <FluentSliderLabel Position="10">2</FluentSliderLabel>
-    <FluentSliderLabel Position="20">3</FluentSliderLabel>
-    <FluentSliderLabel Position="30">4</FluentSliderLabel>
-    <FluentSliderLabel Position="40">5</FluentSliderLabel>
-    <FluentSliderLabel Position="50">6</FluentSliderLabel>
-    <FluentSliderLabel Position="60">7</FluentSliderLabel>
-    <FluentSliderLabel Position="70">7+</FluentSliderLabel>
-    <FluentSliderLabel Position="80">8</FluentSliderLabel>
-    <FluentSliderLabel Position="90">8+</FluentSliderLabel>
-    <FluentSliderLabel Position="100">9</FluentSliderLabel>
-    <FluentSliderLabel Position="110">9+</FluentSliderLabel>
-    <FluentSliderLabel Position="120">10</FluentSliderLabel>
-    <FluentSliderLabel Position="130">10+</FluentSliderLabel>
-    <FluentSliderLabel Position="140">11</FluentSliderLabel>
-    <FluentSliderLabel Position="150">11+</FluentSliderLabel>
-    <FluentSliderLabel Position="160">12</FluentSliderLabel>
-    <FluentSliderLabel Position="170">12+</FluentSliderLabel>
-    <FluentSliderLabel Position="180">13</FluentSliderLabel>
-    <FluentSliderLabel Position="190">13+</FluentSliderLabel>
-    <FluentSliderLabel Position="200">14</FluentSliderLabel>
-    <FluentSliderLabel Position="210">14+</FluentSliderLabel>
-    <FluentSliderLabel Position="220">15</FluentSliderLabel>
-    <FluentIcon Name="@FluentIcons.Globe" Slot="thumb" Size="@IconSize.Size16" Color=Color.Neutral />
-</FluentSlider>
--->
+<div>
+    <label for="number-of-recommended-songs">추첨 곡 수
+    <fluent-select class="custom-select" @bind="numberOfResults">
+        <fluent-option value="1">1</fluent-option>
+        <fluent-option value="2">2</fluent-option>
+        <fluent-option value="3">3</fluent-option>
+        <fluent-option value="4">4</fluent-option>
+    </fluent-select>
+    </label>
+</div>
 
 <br/>
-<div hidden="@hideDiv">
-<span style="font:x-large bold;color:red">@difficulty</span> 레벨의 <span style="font:x-large bold;color:red">@position</span>/@numberOfTracks 번째 곡
-<br />
-<span style="font:x-large bold;color:red">@approachPoint</span>에서 접근하면 빨리 찾을 수 있어요!
-</div>
-<p hidden="@hideErrorMsg" style="font:bold;color:red">@errorMsg</p>
+
+<p hidden="@hideErrorMessage" style="font:bold;color:red">@errorMessage</p>
 <br />
 <button class="btn btn-primary" @onclick="onClickGetRandomNumber">추첨!</button>
+
+<FluentDataGrid RowsData="@queryableResults">
+    <TemplateColumn Title="레벨" SortBy="@levelSort" Sortable="true">
+        <ChildContent>
+            @(context.level)
+        </ChildContent>
+    </TemplateColumn>
+    <PropertyColumn Title="위치" Property="@(r => r.position)" />
+    <PropertyColumn Title="전체 곡 수" Property="@(r => r.numberOfTracks)" />
+    <PropertyColumn Title="접근 위치" Property="@(r => r.approachPoint)" />
+</FluentDataGrid>
+
+
 
 @code {
     private enum Version { International = 1, Japanese = 2 };
     
     private Version versionFlag = Version.International;
 
-    private int indexOfSelectedMinDifficulty = 0;
-    private int indexOfSelectedMaxDifficulty = 0;
-    private string status = string.Empty;
-    private string difficulty = string.Empty;
-    private string approachPoint = string.Empty;
-    private int position = 0;
-    private int numberOfTracks = 0;
-    private string errorMsg = string.Empty;
+    private int indexOfSelectedMinLevel = 0;
+    private int indexOfSelectedMaxLevel = 22;
+    private int numberOfResults = 1;
 
+    private record Result (string level, int position, int numberOfTracks, string approachPoint);
+    private List<Result> results = new List<Result>();
+    IQueryable<Result>? queryableResults;
+    GridSort<Result> levelSort = GridSort<Result>
+        .ByAscending(r => Convert.ToInt32(r.level.Trim('+')))
+        .ThenAscending(r => r.level.Length);
+    
+    /* for an error message */
+    private string errorMessage = string.Empty;
     private bool hideDiv { get; set; } = true;
-    private bool hideErrorMsg { get; set; } = true;
+    private bool hideErrorMessage { get; set; } = true;
 
     private int test;
     Dictionary<string, int> internationalTrackinfo = new Dictionary<string, int>();
     Dictionary<string, int> japaneseTrackinfo = new Dictionary<string, int>();
-    List<string> difficulties = new List<string>();
+    List<string> levels = new List<string>();
 
     protected override void OnInitialized()
     {
@@ -147,7 +138,7 @@
         japaneseTrackinfo.Add("14+", 182);
         japaneseTrackinfo.Add("15", 32);
 
-        difficulties = internationalTrackinfo.Keys.ToList();
+        levels = internationalTrackinfo.Keys.ToList();
     }
 
     private void onClickGetRandomNumber()
@@ -162,40 +153,45 @@
         }
         else 
         {
-            errorMsg = "국제판/일본판 구분이 선택되지 않았습니다.";
-            hideDiv = true;
-            hideErrorMsg = false;
+            setErrorMessage("국제판/일본판 구분이 선택되지 않았습니다.");
         }
     }
 
     private void getRandomNumber(Dictionary<String, int> trackInfo)
     {
-        if (indexOfSelectedMinDifficulty > indexOfSelectedMaxDifficulty)
+        if (indexOfSelectedMinLevel > indexOfSelectedMaxLevel)
         {
-            errorMsg = "최소 레벨이 최대 레벨보다 높습니다.";
-            hideDiv = true;
-            hideErrorMsg = false;
+            setErrorMessage("최소 레벨이 최대 레벨보다 높습니다.");
+        }
+        else if (numberOfResults < 1)
+        {
+            setErrorMessage("추첨할 곡 수가 1보다 작습니다.");
         }
         else
         {
             hideDiv = false;
-            hideErrorMsg = true;
+            hideErrorMessage = true;
             Random random = new Random();
-
-            // Random.Next do not include maxValue
-            int indexOfselectedDifficulty = 
-                random.Next(indexOfSelectedMinDifficulty, indexOfSelectedMaxDifficulty + 1);
-            difficulty = trackInfo.ElementAt(indexOfselectedDifficulty).Key;
-            numberOfTracks = trackInfo[difficulty];
-            position = random.Next(1, numberOfTracks + 1);
-            if (numberOfTracks / 2 > position)
+            results = new List<Result>();
+            for (int i = 0; i < numberOfResults; i++) 
             {
-                approachPoint = "왼쪽";
+                // Random.Next do not include maxValue
+                int indexOfselectedLevel = 
+                    random.Next(indexOfSelectedMinLevel, indexOfSelectedMaxLevel + 1);
+                string level = trackInfo.ElementAt(indexOfselectedLevel).Key;
+                int numberOfTracks = trackInfo[level];
+                int position = random.Next(1, numberOfTracks + 1);
+                string approachPoint = numberOfTracks / 2 > position ? "왼쪽" : "오른쪽";
+                results.Add(new Result(level, position, numberOfTracks, approachPoint));
             }
-            else
-            {
-                approachPoint = "오른쪽";
-            }
+            queryableResults = results.AsQueryable();
         }
+    }
+
+    private void setErrorMessage(string errorMsg)
+    {
+        errorMessage = errorMsg;
+        hideDiv = true;
+        hideErrorMessage = false;
     }
 }
