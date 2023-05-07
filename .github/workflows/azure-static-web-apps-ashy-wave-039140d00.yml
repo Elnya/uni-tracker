@@ -18,26 +18,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2.2.4
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          token: ${{ secrets.GITHUB_TOKEN }}
-          cache: pnpm
-
-      - name: Install
-        run: pnpm install
-
-      - name: Build
-        run: pnpm run build
-
-      - name: Remove 'node_modules'
-        run: rm -rf node_modules/
-
+          
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
