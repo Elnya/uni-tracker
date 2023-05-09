@@ -51,13 +51,30 @@
 
 <FluentDataGrid RowsData="@queryableResults">
     <TemplateColumn Title="레벨" SortBy="@levelSort" Sortable="true">
-        <ChildContent>
-            @(context.level)
-        </ChildContent>
+        <strong>@(context.level)</strong>
     </TemplateColumn>
-    <PropertyColumn Title="위치" Property="@(r => r.position)" />
+    <TemplateColumn Title="위치">
+        <strong>@(context.position)</strong>
+    </TemplateColumn>
+    @*<PropertyColumn Title="위치" Property="@(r => r.position)" style="font-weight: bold;" />*@
     <PropertyColumn Title="전체 곡 수" Property="@(r => r.numberOfTracks)" />
+    @*
     <PropertyColumn Title="접근 위치" Property="@(r => r.approachPoint)" />
+    *@
+    <TemplateColumn Title="접근 위치">
+        @if (context.approachPoint == "오른쪽")
+        {
+            <FluentBadge Appearance="Appearance.Accent">
+                @(context.approachPoint)
+            </FluentBadge>
+        }
+        else
+        {
+            <FluentBadge Appearance="Appearance.Neutral">
+                @(context.approachPoint)
+            </FluentBadge>
+        }
+    </TemplateColumn>
 </FluentDataGrid>
 
 
@@ -71,7 +88,14 @@
     private int indexOfSelectedMaxLevel = 22;
     private int numberOfResults = 1;
 
-    private record Result (string level, int position, int numberOfTracks, string approachPoint);
+    private record Result 
+    (
+        string level, 
+        int position, 
+        int numberOfTracks, 
+        string approachPoint
+    );
+
     private List<Result> results = new List<Result>();
     IQueryable<Result>? queryableResults;
     GridSort<Result> levelSort = GridSort<Result>

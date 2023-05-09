@@ -11,7 +11,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["API_Prefix"] ?? builder.HostEnvironment.BaseAddress) });
 
 // Add FluentUI components
-LibraryConfiguration config = new(ConfigurationGenerator.GetIconConfiguration(), ConfigurationGenerator.GetEmojiConfiguration());
-builder.Services.AddFluentUIComponents(config);
+builder.Services.AddFluentUIComponents(options =>
+{
+    options.HostingModel = BlazorHostingModel.WebAssembly;
+    options.IconConfiguration = ConfigurationGenerator.GetIconConfiguration();
+    options.EmojiConfiguration = ConfigurationGenerator.GetEmojiConfiguration();
+});
 
 await builder.Build().RunAsync();
